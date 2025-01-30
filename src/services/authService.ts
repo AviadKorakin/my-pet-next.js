@@ -1,6 +1,6 @@
-import User from "@/models/ServerUser";
+import User from "@/models/User";
 import {connectToDatabase} from "@/lib/mongoose";
-import ServerUser from "@/models/ServerUser";
+import ServerUser from "@/models/User";
 
 export async function findOrCreateUser(github_id: string) {
     if(!github_id) return undefined;
