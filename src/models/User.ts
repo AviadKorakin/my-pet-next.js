@@ -33,7 +33,6 @@ const AvatarSchema = new Schema<IAvatar>({
 });
 
 const UserSchema = new Schema<IUser>({
-    _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
     google_id: { type: String, unique: true, sparse: true },
     github_id: { type: String, unique: true, sparse: true },
     apple_id: { type: String, unique: true, sparse: true },
