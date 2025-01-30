@@ -11,41 +11,36 @@ export const authOptions: AuthOptions = {
             clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         }),
     ],
-    adapter: MongoDBAdapter(clientPromise),
+    adapter: MongoDBAdapter(clientPromise), // ✅ Use MongoDB for session storage
     pages: {
         signIn: "/login", // ✅ Redirect users to a custom login page
     },
+    session: {
+        strategy: "database", // ✅ Ensure database session is explicitly set
+        maxAge: 14 * 24 * 60 * 60, // 30 days session expiration
+        updateAge: 24 * 60 * 60, // Refresh session every 24 hours
+    },
     callbacks: {
-        async jwt({ token, user,  account }) {
-            // If user is available (on sign-in), store their ID in the JWT
-            if (account) {
-                token.accessToken = account.access_token;  // Store access token
-                token.refreshToken = account.refresh_token; // Store refresh token
-            }
+        async jwt({ token, user }) {
             if (user) {
-                token.id = user.id; // Store MongoDB _id (from NextAuth)
+                token.id = user.id; // ✅ Store MongoDB user ID inside token
             }
-            console.log("Data"+ JSON.stringify({ token }));
             return token;
         },
 
         async session({ session, token }) {
-            // Retrieve user ID from token and assign it to session.user
-            session.accessToken = token.accessToken ? token.accessToken as string : undefined;
-            session.refreshToken = token.refreshToken ? token.refreshToken  as string : undefined;
             console.log("🔹 Session Callback - Token:", token); // ✅ Debugging
             if (token.id) {
-                session.user.id = String(token.id);
+                session.user.id = String(token.id); // ✅ Ensure ID is stored
             }
             console.log("🔹 Session Callback - Session:", session); // ✅ Debugging
             return session;
         },
 
-        async signIn({ account }) {
+        async signIn({ account}) {
             const user = await handleGitHubLogin(account);
             return !!user;
         },
     },
     secret: process.env.NEXTAUTH_SECRET,
 };
-

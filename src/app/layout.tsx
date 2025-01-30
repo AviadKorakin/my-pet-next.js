@@ -2,15 +2,15 @@
 
 import "@/app/globals.css";
 import { SessionProvider, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
         <body>
-        <SessionProvider>
-            <AuthRedirect>{children}</AuthRedirect> {/* ✅ Handle redirection inside a component */}
+        <SessionProvider refetchInterval={5 * 60}>
+            <AuthRedirect>{children}</AuthRedirect>
         </SessionProvider>
         </body>
         </html>
@@ -20,16 +20,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 function AuthRedirect({ children }: { children: React.ReactNode }) {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const pathname = usePathname(); // ✅ Get the current path
 
     useEffect(() => {
-        if (status === "authenticated") {
-            router.push("/dashboard"); // ✅ Redirect to dashboard if logged in
-        } else if (status === "unauthenticated") {
-            router.push("/login"); // ✅ Redirect to login if not logged in
+        if (status === "loading") return; // ✅ Prevent redirecting before session is checked
+
+        if (status === "authenticated" && pathname === "/login") {
+            router.push("/dashboard"); // ✅ Only redirect if already on the login page
+        } else if (status === "unauthenticated" && pathname !== "/login") {
+            router.push("/login"); // ✅ Only redirect to login if not already there
         }
-    }, [session, status, router]);
+    }, [status, pathname, router]);
 
     if (status === "loading") return <p>Loading...</p>; // ✅ Prevent flashing content
 
-    return <>{children}</>; // ✅ Only render children if session is checked
+    return <>{children}</>; // ✅ Only render children after session check
 }

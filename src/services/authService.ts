@@ -11,5 +11,6 @@ export async function findOrCreateUser(github_id: string) {
         await user.save();
     }
 
+    console.log(`🔹 User found or created: ${user}`);
     return user;
 }
