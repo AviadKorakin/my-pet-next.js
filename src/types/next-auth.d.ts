@@ -1,15 +1,24 @@
-// Ensure you're importing the right types
-import NextAuth, { DefaultSession } from "next-auth";
+import { DefaultSession, DefaultUser } from "next-auth";
+import { AdapterUser as DefaultAdapterUser } from "@auth/core/adapters"; // ✅ Import base AdapterUser
 
-// Extend the `Session` interface to include `accessToken` and `refreshToken` at the top level
 declare module "next-auth" {
-    interface Session {
-        user: {
-            id: string; // Ensure `user.id` exists in the session
-        } & DefaultSession["user"];
+    interface User extends DefaultUser {
+        role: "admin" | "moderator" | "user"; // ✅ Add role
+        verified: boolean; // ✅ Add verification status
+        verification_code?: string | null;
+        verification_expires?: Date | null;
     }
 
-    interface User {
-        id: string; // Ensure `user.id` exists in the User object
+    interface Session extends DefaultSession {
+        user: User; // ✅ Ensures session.user includes custom fields
+    }
+}
+
+declare module "@auth/core/adapters" {
+    interface AdapterUser extends DefaultAdapterUser {
+        role: "admin" | "moderator" | "user"; // ✅ Extend AdapterUser
+        verified: boolean;
+        verification_code?: string | null;
+        verification_expires?: Date | null;
     }
 }
