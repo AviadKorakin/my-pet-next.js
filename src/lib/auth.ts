@@ -13,6 +13,17 @@ export const authOptions: AuthOptions = {
     ],
     adapter: MongoDBAdapter(clientPromise),
     session: { strategy: "jwt" },
+    cookies: {
+        sessionToken: {
+            name: process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token",
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: true
+            },
+        },
+    },
     pages: {
         signIn: "/login", // ✅ Redirect users to a custom login page
     },
