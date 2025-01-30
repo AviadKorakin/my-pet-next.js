@@ -4,7 +4,6 @@ import { handleGitHubLogin } from "@/controllers/authController";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
 
-console.log("🔹 NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
 export const authOptions: AuthOptions = {
     providers: [
         GitHubProvider({
