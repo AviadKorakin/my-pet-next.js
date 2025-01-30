@@ -1,3 +1,5 @@
+"use client";
+
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
 import {useSession} from "next-auth/react";

@@ -17,7 +17,7 @@ export const authOptions: AuthOptions = {
     },
     session: {
         strategy: "database", // ✅ Ensure database session is explicitly set
-        maxAge: 14 * 24 * 60 * 60, // 30 days session expiration
+        maxAge: 14 * 24 * 60 * 60, // 14 days session expiration
         updateAge: 24 * 60 * 60, // Refresh session every 24 hours
     },
     callbacks: {
