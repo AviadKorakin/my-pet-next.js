@@ -1,7 +1,8 @@
 import {MongoDBAdapter} from "@auth/mongodb-adapter";
 import User, {IUser} from "@/models/User";
-import {Adapter, AdapterUser} from "next-auth/adapters";
+import {Adapter} from "next-auth/adapters";
 import {MongoClient} from "mongodb";
+import {connectToDatabase} from "@/lib/mongoose";
 
 const CustomMongoDBAdapter = (clientPromise: Promise<MongoClient>): Adapter => {
     const adapter = MongoDBAdapter(clientPromise);
@@ -11,6 +12,7 @@ const CustomMongoDBAdapter = (clientPromise: Promise<MongoClient>): Adapter => {
 
         // ✅ Override createUser to include our custom fields
         async createUser(profile: any): Promise<IUser> {
+            await connectToDatabase();
             console.log("🔹 Custom Create User Called:", profile);
 
             return await User.create({
@@ -29,18 +31,21 @@ const CustomMongoDBAdapter = (clientPromise: Promise<MongoClient>): Adapter => {
 
         // ✅ Ensure getUser also returns custom fields
         async getUser(id: string): Promise<IUser | null> {
+            await connectToDatabase();
             console.log("🔹 Getting User by ID:", id);
             return  (await User.findById(id));
         },
 
         // ✅ Ensure getUserByEmail returns custom fields
         async getUserByEmail(email: string): Promise<IUser | null> {
+            await connectToDatabase();
             console.log("🔹 Getting User by Email:", email);
             return (await User.findOne({ email }));
         },
 
         // ✅ Ensure updateUser can modify custom fields
         async updateUser(user: Partial<IUser> & Pick<IUser, "id">): Promise<IUser> {
+            await connectToDatabase();
             console.log("🔹 Updating User:", user);
             const updatedUser = await User.findByIdAndUpdate(user.id, user, { new: true });
 
