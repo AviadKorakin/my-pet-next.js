@@ -32,8 +32,8 @@ export const authOptions: AuthOptions = {
 
         async session({ session, token }) {
             // Retrieve user ID from token and assign it to session.user
-            session.accessToken = token.accessToken; // Attach access token to session
-            session.refreshToken = token.refreshToken; // Attach refresh token to session;
+            session.accessToken = token.accessToken ? token.accessToken as string : undefined;
+            session.refreshToken = token.refreshToken ? token.refreshToken  as string : undefined;
             console.log("🔹 Session Callback - Token:", token); // ✅ Debugging
             if (token.id) {
                 session.user.id = String(token.id);
