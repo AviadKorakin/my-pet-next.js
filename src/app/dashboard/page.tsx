@@ -1,10 +1,9 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
-import {authOptions} from "@/lib/auth";
+import {useSession} from "next-auth/react";
 
 export default async function DashboardPage() {
-    const session = await getServerSession(authOptions);
+    const { data: session, status } = useSession();
 
     if (!session) {
         redirect("/login"); // ✅ Redirect users if not logged in
