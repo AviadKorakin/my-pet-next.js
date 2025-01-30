@@ -34,9 +34,9 @@ const AvatarSchema = new Schema<IAvatar>({
 
 const UserSchema = new Schema<IUser>({
     _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
-    google_id: { type: String, unique: true, sparse: true },
-    github_id: { type: String, unique: true, sparse: true },
-    apple_id: { type: String, unique: true, sparse: true },
+    google_id: { type: String, unique: true, sparse: true, required: false },
+    github_id: { type: String, unique: true, sparse: true, required: false },
+    apple_id: { type: String, unique: true, sparse: true, required: false },
     first_name: { type: String, required: false },
     last_name: { type: String, required: false },
     role: { type: String, enum: ["admin", "moderator", "user"], default: "user" },
