@@ -14,8 +14,11 @@ declare module "next-auth" {
     }
 }
 
+
 declare module "@auth/core/adapters" {
     interface AdapterUser extends DefaultAdapterUser {
+        name: string | null,
+        image: string | null,
         role: "admin" | "moderator" | "user"; // ✅ Extend AdapterUser
         verified: boolean;
         verification_code?: string | null;

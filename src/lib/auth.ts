@@ -2,6 +2,7 @@ import NextAuth, { AuthOptions } from "next-auth";
 import GitHubProvider, {GithubProfile} from "next-auth/providers/github";
 import clientPromise from "@/lib/mongodb";
 import {MongoDBAdapter} from "@auth/mongodb-adapter";
+import {CustomMongoAdapter} from "@/lib/CustomMongoAdapter";
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -24,7 +25,7 @@ export const authOptions: AuthOptions = {
             }
         }),
     ],
-    adapter: MongoDBAdapter(clientPromise), // ✅ Use MongoDB for session storage
+    adapter: CustomMongoAdapter(clientPromise), // ✅ Use MongoDB for session storage
     pages: {
         signIn: "/login", // ✅ Redirect users to a custom login page
     },
