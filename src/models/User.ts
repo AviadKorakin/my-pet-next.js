@@ -2,9 +2,13 @@ import mongoose, { Schema, Document } from "mongoose";
 import { AdapterUser } from "next-auth/adapters";
 
 // ✅ Define `IUser` without `_id`, using `id` instead
-export interface IUser extends Document, Omit<AdapterUser, "_id"> {
+export interface IUser extends Document, AdapterUser {
     id: string; // ✅ Use NextAuth's `id` as the primary identifier
     role: "admin" | "moderator" | "user";
+    name:string | null;
+    email: string;
+    image: string | null;
+    emailVerified:Date | null;
     verified: boolean;
     verification_code?: string;
     verification_expires?: Date;
