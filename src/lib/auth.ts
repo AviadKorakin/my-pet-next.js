@@ -38,6 +38,7 @@ export const authOptions: AuthOptions = {
         },
 
         async signIn({ account}) {
+            console.log("sign in triggered with" + account);
             const user = await handleGitHubLogin(account);
             return !!user;
         },
