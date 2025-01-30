@@ -5,6 +5,11 @@ import {authOptions} from "@/lib/auth";
 export async function GET(req: Request) {
     console.log("🔹 [LOG] Session API Called"); // ✅ Log when the API is hit
 
+    // Log incoming cookies
+    const cookies = req.headers.get("cookie");
+    console.log("🔹 Incoming Cookies:", cookies); // ✅ Log all cookies
+
+
     const session = await getServerSession(authOptions);
 
     console.log("🔹 [LOG] Session Data:", session); // ✅ Log the session data
