@@ -3,7 +3,7 @@
 import "@/app/globals.css";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (

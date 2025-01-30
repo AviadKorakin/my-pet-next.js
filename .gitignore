@@ -1,0 +1,28 @@
+# Environment Variables (🚫 Do NOT upload secrets)
+.env
+.env.local
+.env.development
+.env.production
+
+# Dependencies (Node Modules)
+node_modules/
+.next/
+dist/
+
+# Logs & Debugging Files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# MacOS System Files (If using Mac)
+.DS_Store
+
+# Editor Settings (VSCode, JetBrains, etc.)
+.vscode/
+.idea/
+*.iml
+
+# Ignore Build & Cache
+.cache/
+out/
