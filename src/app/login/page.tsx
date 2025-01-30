@@ -6,14 +6,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function LoginPage() {
-    const { data: session } = useSession();
     const router = useRouter();
 
-    useEffect(() => {
-        if (session) {
-            router.push("/dashboard"); // ✅ Redirect authenticated users
-        }
-    }, [session, router]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

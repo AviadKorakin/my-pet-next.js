@@ -1,5 +1,5 @@
 import { connectToDatabase } from "@/lib/mongoose";
-import User from "@/models/User";
+import User from "@/models/ServerUser";
 import { NextResponse } from "next/server";
 
 // Handle GET request to fetch all users
