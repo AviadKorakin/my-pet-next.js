@@ -27,6 +27,7 @@ export const authOptions: AuthOptions = {
             if (user) {
                 token.id = user.id; // Store MongoDB _id (from NextAuth)
             }
+            console.log("Data"+ JSON.stringify({ token }));
             return token;
         },
 
