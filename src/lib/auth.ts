@@ -12,8 +12,6 @@ export const authOptions: AuthOptions = {
         }),
     ],
     adapter: MongoDBAdapter(clientPromise),
-    session: { strategy: "jwt" },
-
     pages: {
         signIn: "/login", // ✅ Redirect users to a custom login page
     },
