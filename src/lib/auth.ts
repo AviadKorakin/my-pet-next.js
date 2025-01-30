@@ -13,24 +13,17 @@ export const authOptions: AuthOptions = {
     ],
     adapter: MongoDBAdapter(clientPromise),
     session: { strategy: "jwt" },
-    cookies: {
-        sessionToken: {
-            name: process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token",
-            options: {
-                httpOnly: true,
-                sameSite: "lax",
-                path: "/",
-                secure: true
-            },
-        },
-    },
+
     pages: {
         signIn: "/login", // ✅ Redirect users to a custom login page
     },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user,  account }) {
             // If user is available (on sign-in), store their ID in the JWT
-            console.log("🔹 JWT Callback - Token:", token); // ✅ Debugging
+            if (account) {
+                token.accessToken = account.access_token;  // Store access token
+                token.refreshToken = account.refresh_token; // Store refresh token
+            }
             if (user) {
                 token.id = user.id; // Store MongoDB _id (from NextAuth)
             }
@@ -39,6 +32,8 @@ export const authOptions: AuthOptions = {
 
         async session({ session, token }) {
             // Retrieve user ID from token and assign it to session.user
+            session.accessToken = token.accessToken; // Attach access token to session
+            session.refreshToken = token.refreshToken; // Attach refresh token to session;
             console.log("🔹 Session Callback - Token:", token); // ✅ Debugging
             if (token.id) {
                 session.user.id = String(token.id);
