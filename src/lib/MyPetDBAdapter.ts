@@ -1,8 +1,7 @@
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
-import User, { ICustomUser } from "@/models/User";
+import User from "@/models/User";
 import { Adapter, AdapterUser } from "next-auth/adapters";
-import mongoose from "mongoose";
 
 const CustomMongoDBAdapter = (): Adapter => {
     const adapter = MongoDBAdapter(clientPromise);
@@ -33,13 +32,13 @@ const CustomMongoDBAdapter = (): Adapter => {
         // ✅ Ensure getUser also returns custom fields
         async getUser(id: string): Promise<AdapterUser | null> {
             console.log("🔹 Getting User by ID:", id);
-            return  User.findById(id);
+            return  (await User.findById(id)).toObject() as AdapterUser ;
         },
 
         // ✅ Ensure getUserByEmail returns custom fields
         async getUserByEmail(email: string): Promise<AdapterUser | null> {
             console.log("🔹 Getting User by Email:", email);
-            return User.findOne({ email });
+            return (await User.findOne({ email })).toObject() as AdapterUser;
         },
 
         // ✅ Ensure updateUser can modify custom fields
