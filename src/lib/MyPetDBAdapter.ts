@@ -1,19 +1,19 @@
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import clientPromise from "@/lib/mongodb";
-import User from "@/models/User";
-import { Adapter, AdapterUser } from "next-auth/adapters";
+import {MongoDBAdapter} from "@auth/mongodb-adapter";
+import User, {IUser} from "@/models/User";
+import {Adapter, AdapterUser} from "next-auth/adapters";
+import {MongoClient} from "mongodb";
 
-const CustomMongoDBAdapter = (): Adapter => {
+const CustomMongoDBAdapter = (clientPromise: Promise<MongoClient>): Adapter => {
     const adapter = MongoDBAdapter(clientPromise);
 
     return {
         ...adapter,
 
         // ✅ Override createUser to include our custom fields
-        async createUser(profile: any): Promise<AdapterUser> {
+        async createUser(profile: any): Promise<IUser> {
             console.log("🔹 Custom Create User Called:", profile);
 
-            const newUser = await User.create({
+            return await User.create({
                 name: profile.name,
                 email: profile.email,
                 image: profile.image,
@@ -25,24 +25,22 @@ const CustomMongoDBAdapter = (): Adapter => {
                 verification_code: null,
                 verification_expires: null,
             });
-
-            return newUser.toObject() as AdapterUser;
         },
 
         // ✅ Ensure getUser also returns custom fields
-        async getUser(id: string): Promise<AdapterUser | null> {
+        async getUser(id: string): Promise<IUser | null> {
             console.log("🔹 Getting User by ID:", id);
-            return  (await User.findById(id)).toObject() as AdapterUser ;
+            return  (await User.findById(id));
         },
 
         // ✅ Ensure getUserByEmail returns custom fields
-        async getUserByEmail(email: string): Promise<AdapterUser | null> {
+        async getUserByEmail(email: string): Promise<IUser | null> {
             console.log("🔹 Getting User by Email:", email);
-            return (await User.findOne({ email })).toObject() as AdapterUser;
+            return (await User.findOne({ email }));
         },
 
         // ✅ Ensure updateUser can modify custom fields
-        async updateUser(user: Partial<AdapterUser> & Pick<AdapterUser, "id">): Promise<AdapterUser> {
+        async updateUser(user: Partial<IUser> & Pick<IUser, "id">): Promise<IUser> {
             console.log("🔹 Updating User:", user);
             const updatedUser = await User.findByIdAndUpdate(user.id, user, { new: true });
 
@@ -50,7 +48,7 @@ const CustomMongoDBAdapter = (): Adapter => {
                 throw new Error(`User with ID ${user.id} not found.`);
             }
 
-            return updatedUser.toObject() as AdapterUser;
+            return updatedUser;
         },
     };
 };

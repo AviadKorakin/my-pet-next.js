@@ -2,6 +2,7 @@ import NextAuth, { AuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
+import CustomMongoDBAdapter from "@/lib/MyPetDBAdapter";
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -10,7 +11,7 @@ export const authOptions: AuthOptions = {
             clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         }),
     ],
-    adapter: MongoDBAdapter(clientPromise), // ✅ Use MongoDB for session storage
+    adapter: CustomMongoDBAdapter(clientPromise), // ✅ Use MongoDB for session storage
     pages: {
         signIn: "/login", // ✅ Redirect users to a custom login page
     },

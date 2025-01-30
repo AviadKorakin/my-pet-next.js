@@ -1,14 +1,14 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { AdapterUser } from "next-auth/adapters";
 
-export interface ICustomUser extends AdapterUser {
+export interface IUser extends AdapterUser {
     role: "admin" | "moderator" | "user";
     verified: boolean;
     verification_code?: string;
     verification_expires?: Date;
 }
 
-const UserSchema = new Schema<ICustomUser>({
+const UserSchema = new Schema<IUser>({
     name: { type: String, required: false },
     email: { type: String, required: true, unique: true },
     image: { type: String, required: false },
@@ -21,4 +21,4 @@ const UserSchema = new Schema<ICustomUser>({
     verification_expires: { type: Date },
 });
 
-export default mongoose.models.User || mongoose.model<ICustomUser>("User", UserSchema);
+export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
