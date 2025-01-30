@@ -24,6 +24,7 @@ import type {
     VerificationToken,
 } from "@auth/core/adapters"
 import type { MongoClient } from "mongodb"
+import {sendVerificationEmail} from "@/lib/sendEmail";
 
 /**
  * This adapter uses https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-2.html#using-declarations-and-explicit-resource-management.
@@ -145,10 +146,23 @@ export function CustomMongoAdapter(
 
     return {
         async createUser(data) {
-            const user = to<AdapterUser>(data)
-                await using db = await getDb()
-            await db.U.insertOne(user)
-            return from<AdapterUser>(user)
+            const user = to<AdapterUser>(data);
+
+            // ✅ Generate a random 6-digit verification code
+            const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            user.verification_code = verificationCode;
+            user.verification_expires = new Date(Date.now() + 10 * 60 * 1000); // Expires in 10 minutes
+
+                await using db = await getDb();
+            await db.U.insertOne(user);
+
+            // ✅ Send email in parallel (non-blocking)
+            sendVerificationEmail(user.email, verificationCode)
+                .then(() => console.log(`📧 Email sent to ${user.email}`))
+                .catch((err) => console.error("❌ Email sending failed:", err));
+
+            console.log(`✅ User created & email sent in parallel: ${user.email}`);
+            return from<AdapterUser>(user);
         },
         async getUser(id) {
                 await using db = await getDb()
