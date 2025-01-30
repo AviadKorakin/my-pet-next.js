@@ -1,61 +1,38 @@
-import {MongoDBAdapter} from "@auth/mongodb-adapter";
-import User, {IUser} from "@/models/User";
-import {Adapter} from "next-auth/adapters";
-import {MongoClient} from "mongodb";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import clientPromise from "@/lib/mongodb";
+import User, { IUser } from "@/models/User";
+import { Adapter, AdapterUser, AdapterSession, AdapterAccount, VerificationToken } from "next-auth/adapters";
+import mongoose from "mongoose";
 import {connectToDatabase} from "@/lib/mongoose";
+import {MongoClient} from "mongodb";
 
 const CustomMongoDBAdapter = (clientPromise: Promise<MongoClient>): Adapter => {
     const adapter = MongoDBAdapter(clientPromise);
 
     return {
-        ...adapter,
+        ...adapter, // ✅ Keep all other default adapter methods
 
-        // ✅ Override createUser to include our custom fields
-        async createUser(profile: any): Promise<IUser> {
+        // ✅ Create a new user, ensuring we store `id` from NextAuth
+        async createUser(userData: AdapterUser): Promise<AdapterUser> {
             await connectToDatabase();
-            console.log("🔹 Custom Create User Called:", profile);
+            console.log("🔹 Creating New User:", userData);
 
-            return await User.create({
-                id: profile.id,
-                name: profile.name,
-                email: profile.email,
-                image: profile.image,
-                emailVerified: profile.emailVerified,
+            const newUser = await User.create({
+                id: userData.id, // ✅ Generate unique ID
+                name: userData.name,
+                email: userData.email,
+                image: userData.image,
+                emailVerified: userData.emailVerified,
 
-                // ✅ Add custom fields
+                // ✅ Custom fields
                 role: "user",
                 verified: false,
                 verification_code: null,
                 verification_expires: null,
             });
-        },
 
-        // ✅ Ensure getUser also returns custom fields
-        async getUser(id: string): Promise<IUser | null> {
-            await connectToDatabase();
-            console.log("🔹 Getting User by ID:", id);
-            return(await User.findOne({id: id }));
-        },
-
-        // ✅ Ensure getUserByEmail returns custom fields
-        async getUserByEmail(email: string): Promise<IUser | null> {
-            await connectToDatabase();
-            console.log("🔹 Getting User by Email:", email);
-            return (await User.findOne({email: email }));
-        },
-
-        // ✅ Ensure updateUser can modify custom fields
-        async updateUser(user: Partial<IUser> & Pick<IUser, "id">): Promise<IUser> {
-            await connectToDatabase();
-            console.log("🔹 Updating User:", user);
-            const updatedUser = await User.findByIdAndUpdate(user.id, user, { new: true });
-
-            if (!updatedUser) {
-                throw new Error(`User with ID ${user.id} not found.`);
-            }
-
-            return updatedUser;
-        },
+            return newUser.toObject() as AdapterUser;
+        }
     };
 };
 
