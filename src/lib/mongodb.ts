@@ -1,24 +1,19 @@
-// This approach is taken from https://github.com/vercel/next.js/tree/canary/examples/with-mongodb
-import { MongoClient, ServerApiVersion } from "mongodb"
+import { MongoClient } from "mongodb";
 
-if (!process.env.MONGO_URI) {
-    throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
+const mongoURI = process.env.MONGO_URI!;
+
+let client: MongoClient;
+declare global {
+    var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-const uri = process.env.MONGO_URI
-const options = {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    },
+let clientPromise: Promise<MongoClient>;
+
+if (!global._mongoClientPromise) {
+    client = new MongoClient(mongoURI);
+    global._mongoClientPromise = client.connect();
 }
 
-let client: MongoClient
+clientPromise = global._mongoClientPromise;
 
-client = new MongoClient(uri, options)
-
-
-// Export a module-scoped MongoClient. By doing this in a
-// separate module, the client can be shared across functions.
-export default client
+export default clientPromise;
