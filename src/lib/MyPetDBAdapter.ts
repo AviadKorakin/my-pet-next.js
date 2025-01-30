@@ -16,6 +16,7 @@ const CustomMongoDBAdapter = (clientPromise: Promise<MongoClient>): Adapter => {
             console.log("🔹 Custom Create User Called:", profile);
 
             return await User.create({
+                id: profile.id,
                 name: profile.name,
                 email: profile.email,
                 image: profile.image,
@@ -33,14 +34,14 @@ const CustomMongoDBAdapter = (clientPromise: Promise<MongoClient>): Adapter => {
         async getUser(id: string): Promise<IUser | null> {
             await connectToDatabase();
             console.log("🔹 Getting User by ID:", id);
-            return  (await User.findById(id));
+            return(await User.findOne({id: id }));
         },
 
         // ✅ Ensure getUserByEmail returns custom fields
         async getUserByEmail(email: string): Promise<IUser | null> {
             await connectToDatabase();
             console.log("🔹 Getting User by Email:", email);
-            return (await User.findOne({ email }));
+            return (await User.findOne({email: email }));
         },
 
         // ✅ Ensure updateUser can modify custom fields
