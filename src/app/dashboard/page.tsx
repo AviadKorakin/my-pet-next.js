@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
 import {useSession} from "next-auth/react";
+import LoginButton from "@/components/LoginButton";
 
 export default async function DashboardPage() {
     const { data: session, status } = useSession();
@@ -13,7 +14,7 @@ export default async function DashboardPage() {
                 <h2 className="text-2xl font-semibold text-center">
                     Welcome to your Dashboard, {session?.user?.id}!
                 </h2>
-
+                <LoginButton />
                 <LogoutButton /> {/* ✅ Added the Logout Button here */}
             </div>
         </div>
