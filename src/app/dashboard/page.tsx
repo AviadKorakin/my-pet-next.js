@@ -3,9 +3,14 @@
 import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
     const { data: session, status } = useSession();
+
+    useEffect(() => {
+        console.log("Session updated:", session);
+    }, [session]);
 
     if (status === "loading") return <p>Loading...</p>;
 
