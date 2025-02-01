@@ -1,43 +1,39 @@
-// controllers/userController.ts
-import type { NextApiRequest, NextApiResponse } from "next";
+// app/api/user/verifyuser/route.ts
+import { NextResponse } from "next/server";
 import { verifyUser } from "@/services/userService";
 import { AppError } from "@/errors/AppError";
 
-/**
- * Controller to verify a user.
- *
- * Expects a POST request with a JSON body containing:
- *   - userId: the unique user identifier (string)
- *   - code: the verification code provided by the user (string)
- *
- * If the verification is successful, responds with status 200 and a success message.
- * Otherwise, it throws an error with the appropriate message and status code.
- */
-export const verifyUserController = async (req: NextApiRequest, res: NextApiResponse) => {
+export async function POST(request: Request) {
     try {
-        // Allow only POST requests for verification
-        if (req.method !== "POST") {
-            res.setHeader("Allow", ["POST"]);
-            throw new AppError(`Method ${req.method} Not Allowed`, 405);
-        }
+        // Parse the JSON request body
+        const { userId, code } = await request.json();
 
-        const { userId, code } = req.body;
-
-        // Validate the required parameters
+        // Validate required fields
         if (!userId || !code) {
             throw new AppError("Missing required parameters: userId and code", 400);
         }
 
-        // Call the service layer to verify the user.
+        // Call the service to verify the user
         await verifyUser(userId, code);
 
-        // If successful, return a JSON response.
-        res.status(200).json({ message: "User verified successfully" });
+        // Return a success response if verification passes
+        return NextResponse.json(
+            { message: "User verified successfully" },
+            { status: 200 }
+        );
     } catch (error) {
+        // Handle AppError instances with specific status codes
         if (error instanceof AppError) {
-            res.status(error.statusCode).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: "An unexpected error occurred" });
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.statusCode }
+            );
         }
+
+        // Handle any unexpected errors
+        return NextResponse.json(
+            { error: "An unexpected error occurred" },
+            { status: 500 }
+        );
     }
-};
+}

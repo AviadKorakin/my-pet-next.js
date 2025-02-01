@@ -1,7 +1,7 @@
+// models/User.ts
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IUser extends Document {
-    id: string; // Our custom unique identifier as a string
     name: string;
     email: string;
     image?: string | null;
@@ -13,13 +13,6 @@ export interface IUser extends Document {
 
 const UserSchema: Schema<IUser> = new Schema(
     {
-        id: {
-            type: String,
-            required: true,
-            unique: true,
-            // Default value using a new ObjectId string
-            default: () => new mongoose.Types.ObjectId().toString(),
-        },
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
         image: { type: String, default: null },
@@ -28,11 +21,7 @@ const UserSchema: Schema<IUser> = new Schema(
         verification_code: { type: String, default: null },
         verification_expires: { type: Date, default: null },
     },
-    {
-        _id: false,
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
-export const User: Model<IUser> =
-    mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+export const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
