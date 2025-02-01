@@ -1,4 +1,4 @@
-// app/api/user/verifyuser/route.ts
+// app/api/user/verify-user/route.ts
 import { NextResponse } from "next/server";
 import { verifyUser } from "@/services/userService";
 import { AppError } from "@/errors/AppError";

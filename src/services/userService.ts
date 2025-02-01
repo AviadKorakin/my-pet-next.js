@@ -17,7 +17,7 @@ import { AppError } from "@/errors/AppError";
 export const verifyUser = async (userId: string, code: string): Promise<void> => {
     // Ensure the database connection is established
     await connectToDatabase();
-
+    console.log(userId);
     // Find the user by the default _id field
     const user = await User.findById(userId);
     if (!user) {

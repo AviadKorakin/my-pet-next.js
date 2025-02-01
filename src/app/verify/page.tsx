@@ -21,7 +21,7 @@ export default function VerifyPage() {
 
         setLoading(true);
         try {
-            const res = await fetch("/api/user/verifyuser", {
+            const res = await fetch("/api/user/verify-user", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userId: session.user.id, code }),
