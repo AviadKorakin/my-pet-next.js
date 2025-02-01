@@ -47,9 +47,8 @@ export const authOptions: AuthOptions = {
     callbacks: {
         session: async ({ session, user }) => {
             if (session?.user) {
-                session.user.id = user.id; // or user._id.toString() if necessary
+                session.user.id = user.id;
                 session.user.verified = user.verified;
-                // add any other custom fields here
             }
             return session;
         },

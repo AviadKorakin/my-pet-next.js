@@ -20,11 +20,11 @@ export async function connectToDatabase() {
             console.log("✅ Connected to MongoDB (Mongoose)");
 
             // ✅ Only clear the database on the first connection
-            if (process.env.CLEAR_DB_ON_STARTUP === "true") {
-                console.log("⚠️ Clearing database...");
-                await clearDatabase(mongooseInstance.connection);
-                console.log("✅ Database cleared!");
-            }
+            // if (process.env.CLEAR_DB_ON_STARTUP === "true") {
+            //     console.log("⚠️ Clearing database...");
+            //     await clearDatabase(mongooseInstance.connection);
+            //     console.log("✅ Database cleared!");
+            // }
 
             return mongooseInstance.connection;
         });

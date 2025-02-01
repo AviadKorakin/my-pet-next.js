@@ -8,11 +8,6 @@ import { useEffect } from "react";
 export default function DashboardPage() {
     const { data: session, status } = useSession();
 
-    useEffect(() => {
-        console.log("Session updated:", session);
-    }, [session]);
-
-    if (status === "loading") return <p>Loading...</p>;
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
