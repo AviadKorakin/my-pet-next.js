@@ -7,6 +7,5 @@ export async function GET(req: Request) {
     if (!session) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log(session);
-    return NextResponse.json({session });
+    return NextResponse.json(session);
 }
