@@ -1,9 +1,8 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import GitHubProvider, {GithubProfile} from "next-auth/providers/github";
 import GoogleProvider, {GoogleProfile} from "next-auth/providers/google";
-import clientPromise from "@/lib/mongodb";
-import {MongoDBAdapter} from "@auth/mongodb-adapter";
 import {CustomMongoAdapter} from "@/lib/CustomMongoAdapter";
+import client from "@/lib/mongodb";
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -17,10 +16,6 @@ export const authOptions: AuthOptions = {
                     name: profile.name,
                     email: profile.email,
                     image: profile.picture,
-                    role: "user", // Default role
-                    verified: false, // New users are unverified
-                    verification_code: null, // No verification code initially
-                    verification_expires: null, // No expiration date initially
 
                 }
             }
@@ -35,16 +30,12 @@ export const authOptions: AuthOptions = {
                     name: profile.name,
                     email: profile.email,
                     image: profile.picture,
-                    role: "user", // Default role
-                    verified: false, // New users are unverified
-                    verification_code: null, // No verification code initially
-                    verification_expires: null, // No expiration date initially
 
                 }
             }
         }),
     ],
-    adapter: CustomMongoAdapter(clientPromise), // ✅ Use MongoDB for session storage
+    adapter: CustomMongoAdapter(client), // ✅ Use MongoDB for session storage
     pages: {
         signIn: "/login", // ✅ Redirect users to a custom login page
     },

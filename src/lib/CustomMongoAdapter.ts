@@ -14,7 +14,7 @@
  *
  * @module @auth/mongodb-adapter
  */
-import { ObjectId } from "mongodb"
+import {ObjectId} from "mongodb"
 
 import type {
     Adapter,
@@ -23,7 +23,7 @@ import type {
     AdapterSession,
     VerificationToken,
 } from "@auth/core/adapters"
-import type { MongoClient } from "mongodb"
+import type {MongoClient} from "mongodb"
 import {sendVerificationEmail} from "@/lib/sendEmail";
 
 /**
@@ -124,15 +124,15 @@ export function CustomMongoAdapter(
         | (() => MongoClient | Promise<MongoClient>),
     options: MongoDBAdapterOptions = {}
 ): Adapter {
-    const { collections } = options
-    const { from, to } = format
+    const {collections} = options
+    const {from, to} = format
 
     const getDb = async () => {
         const _client: MongoClient = await (typeof client === "function"
             ? client()
             : client)
         const _db = _client.db(options.databaseName)
-        const c = { ...defaultCollections, ...collections }
+        const c = {...defaultCollections, ...collections}
         return {
             U: _db.collection<AdapterUser>(c.Users),
             A: _db.collection<AdapterAccount>(c.Accounts),
@@ -147,13 +147,14 @@ export function CustomMongoAdapter(
     return {
         async createUser(data) {
             const user = to<AdapterUser>(data);
-
+            // Enforce defaults if not provided
+            user.role = "user";
+            user.verified = false;
             // ✅ Generate a random 6-digit verification code
             const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
             user.verification_code = verificationCode;
             user.verification_expires = new Date(Date.now() + 10 * 60 * 1000); // Expires in 10 minutes
-
-                await using db = await getDb();
+            await using db = await getDb();
             await db.U.insertOne(user);
 
             // ✅ Send email in parallel (non-blocking)
@@ -166,13 +167,13 @@ export function CustomMongoAdapter(
         },
         async getUser(id) {
                 await using db = await getDb()
-            const user = await db.U.findOne({ _id: _id(id) })
+            const user = await db.U.findOne({_id: _id(id)})
             if (!user) return null
             return from<AdapterUser>(user)
         },
         async getUserByEmail(email) {
                 await using db = await getDb()
-            const user = await db.U.findOne({ email })
+            const user = await db.U.findOne({email})
             if (!user) return null
             return from<AdapterUser>(user)
         },
@@ -180,17 +181,17 @@ export function CustomMongoAdapter(
                 await using db = await getDb()
             const account = await db.A.findOne(provider_providerAccountId)
             if (!account) return null
-            const user = await db.U.findOne({ _id: new ObjectId(account.userId) })
+            const user = await db.U.findOne({_id: new ObjectId(account.userId)})
             if (!user) return null
             return from<AdapterUser>(user)
         },
         async updateUser(data) {
-            const { _id, ...user } = to<AdapterUser>(data)
+            const {_id, ...user} = to<AdapterUser>(data)
                 await using db = await getDb()
             const result = await db.U.findOneAndUpdate(
-                { _id },
-                { $set: user },
-                { returnDocument: "after" }
+                {_id},
+                {$set: user},
+                {returnDocument: "after"}
             )
 
             return from<AdapterUser>(result!)
@@ -199,9 +200,9 @@ export function CustomMongoAdapter(
             const userId = _id(id)
                 await using db = await getDb()
             await Promise.all([
-                db.A.deleteMany({ userId: userId as any }),
-                db.S.deleteMany({ userId: userId as any }),
-                db.U.deleteOne({ _id: userId }),
+                db.A.deleteMany({userId: userId as any}),
+                db.S.deleteMany({userId: userId as any}),
+                db.U.deleteOne({_id: userId}),
             ])
         },
         linkAccount: async (data) => {
@@ -217,9 +218,9 @@ export function CustomMongoAdapter(
         },
         async getSessionAndUser(sessionToken) {
                 await using db = await getDb()
-            const session = await db.S.findOne({ sessionToken })
+            const session = await db.S.findOne({sessionToken})
             if (!session) return null
-            const user = await db.U.findOne({ _id: new ObjectId(session.userId) })
+            const user = await db.U.findOne({_id: new ObjectId(session.userId)})
             if (!user) return null
             return {
                 user: from<AdapterUser>(user),
@@ -233,12 +234,12 @@ export function CustomMongoAdapter(
             return from<AdapterSession>(session)
         },
         async updateSession(data) {
-            const { _id, ...session } = to<AdapterSession>(data)
+            const {_id, ...session} = to<AdapterSession>(data)
                 await using db = await getDb()
             const updatedSession = await db.S.findOneAndUpdate(
-                { sessionToken: session.sessionToken },
-                { $set: session },
-                { returnDocument: "after" }
+                {sessionToken: session.sessionToken},
+                {$set: session},
+                {returnDocument: "after"}
             )
             return from<AdapterSession>(updatedSession!)
         },
@@ -258,7 +259,7 @@ export function CustomMongoAdapter(
                 await using db = await getDb()
             const verificationToken = await db.V.findOneAndDelete(identifier_token)
             if (!verificationToken) return null
-            const { _id, ...rest } = verificationToken
+            const {_id, ...rest} = verificationToken
             return rest
         },
     }

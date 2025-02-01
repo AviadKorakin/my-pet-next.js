@@ -3,8 +3,8 @@ import { AdapterUser as DefaultAdapterUser } from "@auth/core/adapters"; // ✅ 
 
 declare module "next-auth" {
     interface User extends DefaultUser {
-        role: "admin" | "moderator" | "user"; // ✅ Add role
-        verified: boolean; // ✅ Add verification status
+        role?: "admin" | "moderator" | "user"; // ✅ Add role
+        verified?: boolean; // ✅ Add verification status
         verification_code?: string | null;
         verification_expires?: Date | null;
     }

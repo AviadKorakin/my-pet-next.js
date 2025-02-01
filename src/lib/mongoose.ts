@@ -11,7 +11,7 @@ declare global {
 global._mongoose = global._mongoose || { conn: null, promise: null };
 
 export async function connectToDatabase() {
-    if (global._mongoose?.conn) {
+    if (global._mongoose?.conn && isConnectionValid(global._mongoose.conn)) {
         return global._mongoose.conn; // ✅ Reuse existing connection
     }
 
@@ -42,4 +42,9 @@ async function clearDatabase(conn: mongoose.Connection) {
         await collection.deleteMany({}); // ⚠️ Deletes all data
         console.log(`🗑️ Cleared collection: ${collection.collectionName}`);
     }
+}
+function isConnectionValid(conn: mongoose.Connection): boolean {
+    return conn.readyState === 1 || conn.readyState === 2;
+    // 1 = Connected ✅
+    // 2 = Connecting ⏳ (Allow it to continue)
 }

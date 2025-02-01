@@ -1,11 +1,10 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useSession, signIn } from "next-auth/react";
+import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
-import {useSession} from "next-auth/react";
-import LoginButton from "@/components/LoginButton";
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
     const { data: session, status } = useSession();
 
     return (
@@ -14,8 +13,23 @@ export default async function DashboardPage() {
                 <h2 className="text-2xl font-semibold text-center">
                     Welcome to your Dashboard, {session?.user?.id}!
                 </h2>
-                <LoginButton />
-                <LogoutButton /> {/* ✅ Added the Logout Button here */}
+
+                <button
+                    onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+                    className="mt-4 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+                >
+                    Link GitHub Provider
+                </button>
+
+                {!session?.user?.verified && (
+                    <div className="mt-4">
+                        <Link href="/verify">
+                            <span className="text-blue-600 underline">Verify Your Account</span>
+                        </Link>
+                    </div>
+                )}
+
+                <LogoutButton />
             </div>
         </div>
     );
